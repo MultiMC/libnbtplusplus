@@ -59,7 +59,7 @@ endif()
 if(NBT_USE_ZLIB)
     target_link_libraries(${NBT_NAME} z)
 endif()
-set_property(TARGET ${NBT_NAME} PROPERTY CXX_STANDARD 11)
+set_property(TARGET ${NBT_NAME} PROPERTY CXX_STANDARD 17)
 generate_export_header(${NBT_NAME} BASE_NAME nbt)
 
 if(${BUILD_SHARED_LIBS})
