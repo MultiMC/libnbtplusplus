@@ -121,15 +121,22 @@ template<class T> bool operator==(const tag_array<T>& lhs, const tag_array<T>& r
 template<class T> bool operator!=(const tag_array<T>& lhs, const tag_array<T>& rhs)
 { return !(lhs == rhs); }
 
+//Explicit instantiations
+#ifdef Launcher_nbt___EXPORTS
+    /* We are building this library */
+    extern template class tag_array<int8_t>;
+    extern template class tag_array<int32_t>;
+    extern template class tag_array<int64_t>;    
+#else
+    template class NBT_EXPORT tag_array<int8_t>;
+    template class NBT_EXPORT tag_array<int32_t>;
+    template class NBT_EXPORT tag_array<int64_t>;
+#endif
+
 //Typedefs that should be used instead of the template tag_array.
 typedef tag_array<int8_t> tag_byte_array;
 typedef tag_array<int32_t> tag_int_array;
 typedef tag_array<int64_t> tag_long_array;
-
-//Explicit instantiations
-template class NBT_EXPORT tag_array<int8_t>;
-template class NBT_EXPORT tag_array<int32_t>;
-template class NBT_EXPORT tag_array<int64_t>;
 
 }
 

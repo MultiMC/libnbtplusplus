@@ -206,7 +206,7 @@ void tag_list::emplace_back(Args&&... args)
         el_type_ = T::type;
     else if(el_type_ != T::type)
         throw std::invalid_argument("The tag type does not match the list's content type");
-    tags.emplace_back(make_unique<T>(std::forward<Args>(args)...));
+    tags.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
 }
 
 template<class T, class Arg>
@@ -214,8 +214,9 @@ void tag_list::init(std::initializer_list<Arg> init)
 {
     el_type_ = T::type;
     tags.reserve(init.size());
-    for(const Arg& arg: init)
-        tags.emplace_back(make_unique<T>(arg));
+    for(const Arg& arg: init) {
+        tags.emplace_back(std::make_unique<T>(arg));
+    }
 }
 
 }

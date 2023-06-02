@@ -22,7 +22,6 @@
 
 #include "tag.h"
 #include "nbt_visitor.h"
-#include "make_unique.h"
 
 namespace nbt
 {
@@ -39,8 +38,8 @@ namespace detail
 
         tag_type get_type() const noexcept override final { return Sub::type; };
 
-        std::unique_ptr<tag> clone() const& override final { return make_unique<Sub>(sub_this()); }
-        std::unique_ptr<tag> move_clone() && override final { return make_unique<Sub>(std::move(sub_this())); }
+        std::unique_ptr<tag> clone() const& override final { return std::make_unique<Sub>(sub_this()); }
+        std::unique_ptr<tag> move_clone() && override final { return std::make_unique<Sub>(std::move(sub_this())); }
 
         tag& assign(tag&& rhs) override final { return sub_this() = dynamic_cast<Sub&&>(rhs); }
 

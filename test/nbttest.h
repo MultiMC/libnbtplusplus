@@ -231,7 +231,7 @@ public:
     void test_value()
     {
         value val1;
-        value val2(make_unique<tag_int>(42));
+        value val2(std::make_unique<tag_int>(42));
         value val3(tag_int(42));
 
         TS_ASSERT(!val1 && val2 && val3);
@@ -299,7 +299,7 @@ public:
         TS_ASSERT_THROWS(val3 = tag_string("foo"), std::bad_cast);
         TS_ASSERT(val3.get() == tag_short(2));
 
-        val2.set_ptr(make_unique<tag_string>("foo"));
+        val2.set_ptr(std::make_unique<tag_string>("foo"));
         TS_ASSERT(val2 == tag_string("foo"));
     }
 
