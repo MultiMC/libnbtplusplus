@@ -39,10 +39,9 @@ typedef tag_primitive<double> tag_double;
 
 class tag_string;
 
-template<class T> class tag_array;
-typedef tag_array<int8_t> tag_byte_array;
-typedef tag_array<int32_t> tag_int_array;
-typedef tag_array<int64_t> tag_long_array;
+class tag_byte_array;
+class tag_int_array;
+class tag_long_array;
 
 class tag_list;
 class tag_compound;

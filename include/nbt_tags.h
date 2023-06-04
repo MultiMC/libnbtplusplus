@@ -19,6 +19,8 @@
  */
 #include "tag_primitive.h"
 #include "tag_string.h"
-#include "tag_array.h"
+#include "tag_byte_array.h"
+#include "tag_int_array.h"
+#include "tag_long_array.h"
 #include "tag_list.h"
 #include "tag_compound.h"
