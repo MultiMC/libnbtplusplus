@@ -98,9 +98,9 @@ private:
     std::vector<value_type> data;
 };
 
-template<class T> bool operator==(const tag_byte_array& lhs, const tag_byte_array& rhs)
+inline bool operator==(const tag_byte_array& lhs, const tag_byte_array& rhs)
 { return lhs.get() == rhs.get(); }
-template<class T> bool operator!=(const tag_byte_array& lhs, const tag_byte_array& rhs)
+inline bool operator!=(const tag_byte_array& lhs, const tag_byte_array& rhs)
 { return !(lhs == rhs); }
 
 }

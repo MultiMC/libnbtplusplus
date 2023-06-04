@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with libnbt++.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <cxxtest/TestSuite.h>
 #include "io/izlibstream.h"
 #include "io/ozlibstream.h"
 #include <fstream>
@@ -25,9 +24,11 @@
 
 #include "data.h"
 
+#include "test.h"
+
 using namespace zlib;
 
-class zlibstream_test : public CxxTest::TestSuite
+class zlibstream_test
 {
 private:
     std::string bigtest;
@@ -44,7 +45,7 @@ public:
             throw std::runtime_error("Could not read bigtest_uncompr file");
     }
 
-    void test_inflate_gzip()
+    bool test_inflate_gzip()
     {
         std::string input(__binary_bigtest_nbt_start, __binary_bigtest_nbt_end);
         std::istringstream gzip_in(input, std::ios::binary);
@@ -95,7 +96,7 @@ public:
         }
     }
 
-    void test_inflate_zlib()
+    bool test_inflate_zlib()
     {
         std::string input(__binary_bigtest_zlib_start, __binary_bigtest_zlib_end);
         std::istringstream zlib_in(input, std::ios::binary);
@@ -112,7 +113,7 @@ public:
         TS_ASSERT_EQUALS(data.str(), bigtest);
     }
 
-    void test_inflate_corrupt()
+    bool test_inflate_corrupt()
     {
         std::string input(__binary_bigtest_corrupt_nbt_start, __binary_bigtest_corrupt_nbt_end);
         std::istringstream gzip_in(input, std::ios::binary);
@@ -125,7 +126,7 @@ public:
         TS_ASSERT(igzs.bad());
     }
 
-    void test_inflate_eof()
+    bool test_inflate_eof()
     {
         std::string input(__binary_bigtest_eof_nbt_start, __binary_bigtest_eof_nbt_end);
         std::istringstream gzip_in(input, std::ios::binary);
@@ -138,7 +139,7 @@ public:
         TS_ASSERT(igzs.bad());
     }
 
-    void test_inflate_trailing()
+    bool test_inflate_trailing()
     {
         //This file contains additional uncompressed data after the zlib-compressed data
         std::string input(__binary_trailing_data_zlib_start, __binary_trailing_data_zlib_end);
@@ -160,7 +161,7 @@ public:
         TS_ASSERT_EQUALS(str, "barbaz");
     }
 
-    void test_deflate_zlib()
+    bool test_deflate_zlib()
     {
         //Here we assume that inflating works and has already been tested
         std::stringstream str;
@@ -226,7 +227,7 @@ public:
         TS_ASSERT_EQUALS(output.str(), bigtest);
     }
 
-    void test_deflate_gzip()
+    bool test_deflate_gzip()
     {
         std::stringstream str;
         std::stringbuf output;
@@ -247,7 +248,7 @@ public:
         TS_ASSERT_EQUALS(output.str(), bigtest);
     }
 
-    void test_deflate_closed()
+    bool test_deflate_closed()
     {
         std::stringstream str;
         {
@@ -275,3 +276,21 @@ public:
         }
     }
 };
+
+int main (void) {
+    zlibstream_test test;
+    bool success = true;
+
+    success &= test.test_deflate_closed();
+    success &= test.test_deflate_gzip();
+    success &= test.test_deflate_zlib();
+
+    success &= test.test_inflate_corrupt();
+    success &= test.test_inflate_eof();
+    success &= test.test_inflate_gzip();
+    success &= test.test_inflate_trailing();
+    success &= test.test_inflate_zlib();
+
+
+    return success ? 0 : 1;
+}

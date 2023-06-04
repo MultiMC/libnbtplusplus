@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with libnbt++.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <cxxtest/TestSuite.h>
 #include "io/stream_reader.h"
 #ifdef NBT_HAVE_ZLIB
 #include "io/izlibstream.h"
@@ -26,15 +25,16 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "test.h"
 
 using namespace nbt;
 
 #include "data.h"
 
-class read_test : public CxxTest::TestSuite
+class read_test
 {
 public:
-    void test_stream_reader_big()
+    bool test_stream_reader_big()
     {
         std::string input{
             1, //tag_type::Byte
@@ -80,7 +80,7 @@ public:
         TS_ASSERT(!is);
     }
 
-    void test_stream_reader_little()
+    bool test_stream_reader_little()
     {
         std::string input{
             0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, //0x0d0c0b0a09080706 in Little Endian
@@ -107,7 +107,7 @@ public:
     }
 
     //Tests if comp equals an extended variant of Notch's bigtest NBT
-    void verify_bigtest_structure(const tag_compound& comp)
+    bool verify_bigtest_structure(const tag_compound& comp)
     {
         TS_ASSERT_EQUALS(comp.size(), 13u);
 
@@ -140,9 +140,10 @@ public:
 
         TS_ASSERT(comp.at("intArrayTest") == tag_int_array(
             {0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f}));
+        return true;
     }
 
-    void test_read_bigtest()
+    bool test_read_bigtest()
     {
         //Uses an extended variant of Notch's original bigtest file
         std::string input(__binary_bigtest_uncompr_start, __binary_bigtest_uncompr_end);
@@ -150,10 +151,10 @@ public:
 
         auto pair = nbt::io::read_compound(file);
         TS_ASSERT_EQUALS(pair.first, "Level");
-        verify_bigtest_structure(*pair.second);
+        return verify_bigtest_structure(*pair.second);
     }
 
-    void test_read_littletest()
+    bool test_read_littletest()
     {
         //Same as bigtest, but little endian
         std::string input(__binary_littletest_uncompr_start, __binary_littletest_uncompr_end);
@@ -162,10 +163,10 @@ public:
         auto pair = nbt::io::read_compound(file, endian::little);
         TS_ASSERT_EQUALS(pair.first, "Level");
         TS_ASSERT_EQUALS(pair.second->get_type(), tag_type::Compound);
-        verify_bigtest_structure(*pair.second);
+        return verify_bigtest_structure(*pair.second);
     }
 
-    void test_read_eof1()
+    bool test_read_eof1()
     {
         std::string input(__binary_errortest_eof1_start, __binary_errortest_eof1_end);
         std::istringstream file(input, std::ios::binary);
@@ -175,9 +176,10 @@ public:
         TS_ASSERT(file);
         TS_ASSERT_THROWS(reader.read_tag(), io::input_error);
         TS_ASSERT(!file);
+        return true;
     }
 
-    void test_read_eof2()
+    bool test_read_eof2()
     {
         std::string input(__binary_errortest_eof2_start, __binary_errortest_eof2_end);
         std::istringstream file(input, std::ios::binary);
@@ -187,9 +189,10 @@ public:
         TS_ASSERT(file);
         TS_ASSERT_THROWS(reader.read_tag(), io::input_error);
         TS_ASSERT(!file);
+        return true;
     }
 
-    void test_read_errortest_noend()
+    bool test_read_errortest_noend()
     {
         std::string input(__binary_errortest_noend_start, __binary_errortest_noend_end);
         std::istringstream file(input, std::ios::binary);
@@ -199,9 +202,10 @@ public:
         TS_ASSERT(file);
         TS_ASSERT_THROWS(reader.read_tag(), io::input_error);
         TS_ASSERT(!file);
+        return true;
     }
 
-    void test_read_errortest_neg_length()
+    bool test_read_errortest_neg_length()
     {
         std::string input(__binary_errortest_neg_length_start, __binary_errortest_neg_length_end);
         std::istringstream file(input, std::ios::binary);
@@ -211,9 +215,10 @@ public:
         TS_ASSERT(file);
         TS_ASSERT_THROWS(reader.read_tag(), io::input_error);
         TS_ASSERT(!file);
+        return true;
     }
 
-    void test_read_misc()
+    bool test_read_misc()
     {
         std::string input(__binary_toplevel_string_start, __binary_toplevel_string_end);
         std::istringstream file(input, std::ios::binary);
@@ -232,8 +237,9 @@ public:
         TS_ASSERT(*pair.second == tag_string(
             "Even though unprovided for by NBT, the library should also handle "
             "the case where the file consists of something else than tag_compound"));
+        return true;
     }
-    void test_read_gzip()
+    bool test_read_gzip()
     {
 #ifdef NBT_HAVE_ZLIB
         std::string input(__binary_bigtest_nbt_start, __binary_bigtest_nbt_end);
@@ -246,5 +252,23 @@ public:
         TS_ASSERT_EQUALS(pair.first, "Level");
         verify_bigtest_structure(*pair.second);
 #endif
+        return true;
     }
 };
+
+int main (void) {
+    read_test test;
+    bool success = true;
+    success &= test.test_stream_reader_big();
+    success &= test.test_stream_reader_little();
+    success &= test.test_read_bigtest();
+    success &= test.test_read_littletest();
+    success &= test.test_read_eof1();
+    success &= test.test_read_eof2();
+    success &= test.test_read_errortest_noend();
+    success &= test.test_read_errortest_neg_length();
+    success &= test.test_read_misc();
+    success &= test.test_read_gzip();
+
+    return success ? 0 : 1;
+}

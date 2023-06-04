@@ -17,18 +17,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with libnbt++.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <cxxtest/TestSuite.h>
 #include "endian_str.h"
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <cstdint>
 
 using namespace endian;
 
-class endian_str_test : public CxxTest::TestSuite
+#include "test.h"
+
+class endian_str_test
 {
 public:
-    void test_uint()
+    static bool test_uint()
     {
         std::stringstream str(std::ios::in | std::ios::out | std::ios::binary);
 
@@ -79,9 +81,10 @@ public:
         TS_ASSERT_EQUALS(u64, 0x090A0B0C0D0E0F10u);
 
         TS_ASSERT(str); //Check if stream has failed
+        return true;
     }
 
-    void test_sint()
+    static bool test_sint()
     {
         std::stringstream str(std::ios::in | std::ios::out | std::ios::binary);
 
@@ -132,9 +135,10 @@ public:
         TS_ASSERT_EQUALS(i64, -0x090A0B0C0D0E0F10);
 
         TS_ASSERT(str); //Check if stream has failed
+        return true;
     }
 
-    void test_float()
+    static bool test_float()
     {
         std::stringstream str(std::ios::in | std::ios::out | std::ios::binary);
 
@@ -171,5 +175,17 @@ public:
         TS_ASSERT_EQUALS(d, dconst);
 
         TS_ASSERT(str); //Check if stream has failed
+        return true;
     }
 };
+
+int main (void) {
+    endian_str_test test;
+    bool success = true;
+
+    success &= test.test_float();
+    success &= test.test_sint();
+    success &= test.test_uint();
+
+    return success ? 0 : 1;
+}

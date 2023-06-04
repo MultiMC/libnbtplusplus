@@ -15,10 +15,6 @@ else()
 endif()
 
 enable_testing()
-find_package(CxxTest REQUIRED)
-
-include_directories(${libnbt++_SOURCE_DIR}/include)
-include_directories(${CXXTEST_INCLUDE_DIR})
 
 function(build_data out_var)
     set(result)
@@ -26,7 +22,7 @@ function(build_data out_var)
         set(out_f "${CMAKE_CURRENT_BINARY_DIR}/testfiles/${in_f}.obj")
         add_custom_command(
             COMMAND mkdir -p "${CMAKE_CURRENT_BINARY_DIR}/testfiles"
-            COMMAND ${CMAKE_OBJCOPY}  --prefix-symbol=_  --input-target=binary  --output-target=${OBJCOPY_TARGET} "${in_f}" "${out_f}"
+            COMMAND ${CMAKE_OBJCOPY}  --prefix-symbols=_  --input-target=binary  --output-target=${OBJCOPY_TARGET} "${in_f}" "${out_f}"
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/testfiles/${in_f}
             OUTPUT ${out_f}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testfiles/
@@ -73,29 +69,30 @@ function(stop_warnings target)
     )
 endfunction()
 
-if(NBT_USE_ZLIB)
-    set(EXTRA_TEST_LIBS ${ZLIB_LIBRARY})
-endif()
-
-CXXTEST_ADD_TEST(nbttest nbttest.cpp ${CMAKE_CURRENT_SOURCE_DIR}/nbttest.h)
+add_executable(nbttest nbttest.cpp)
 target_link_libraries(nbttest ${NBT_NAME})
+add_test(nbttest nbttest)
 stop_warnings(nbttest)
 
-CXXTEST_ADD_TEST(endian_str_test endian_str_test.cpp ${CMAKE_CURRENT_SOURCE_DIR}/endian_str_test.h)
+add_executable(endian_str_test endian_str_test.cpp)
 target_link_libraries(endian_str_test ${NBT_NAME})
+add_test(endian_str_test endian_str_test)
 stop_warnings(endian_str_test)
 
-CXXTEST_ADD_TEST(read_test read_test.cpp ${CMAKE_CURRENT_SOURCE_DIR}/read_test.h)
-target_link_libraries(read_test ${NBT_NAME} ${EXTRA_TEST_LIBS} NbtTestData)
+add_executable(read_test read_test.cpp)
+target_link_libraries(read_test ${NBT_NAME} NbtTestData)
+add_test(read_test read_test)
 stop_warnings(read_test)
 
-CXXTEST_ADD_TEST(write_test write_test.cpp ${CMAKE_CURRENT_SOURCE_DIR}/write_test.h)
-target_link_libraries(write_test ${NBT_NAME} ${EXTRA_TEST_LIBS} NbtTestData)
+add_executable(write_test write_test.cpp)
+target_link_libraries(write_test ${NBT_NAME} NbtTestData)
+add_test(write_test write_test)
 stop_warnings(write_test)
 
 if(NBT_USE_ZLIB)
-    CXXTEST_ADD_TEST(zlibstream_test zlibstream_test.cpp ${CMAKE_CURRENT_SOURCE_DIR}/zlibstream_test.h)
-    target_link_libraries(zlibstream_test ${NBT_NAME} ${EXTRA_TEST_LIBS} NbtTestData)
+    add_executable(zlibstream_test zlibstream_test.cpp)
+    target_link_libraries(zlibstream_test ${NBT_NAME} NbtTestData)
+    add_test(zlibstream_test zlibstream_test)
     stop_warnings(zlibstream_test)
 endif()
 

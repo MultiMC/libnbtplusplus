@@ -69,6 +69,5 @@ if(${BUILD_SHARED_LIBS})
 endif()
 
 if(NBT_BUILD_TESTS)
-    enable_testing()
     add_subdirectory(test)
 endif()

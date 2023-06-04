@@ -79,4 +79,5 @@ int main()
     std::cout << "----- default operator<<:\n";
     std::cout << comp;
     std::cout << "\n-----" << std::endl;
+    return 0;
 }

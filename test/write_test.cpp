@@ -17,7 +17,6 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with libnbt++.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <cxxtest/TestSuite.h>
 #include "io/stream_writer.h"
 #include "io/stream_reader.h"
 #ifdef NBT_HAVE_ZLIB
@@ -31,12 +30,14 @@
 
 #include "data.h"
 
+#include "test.h"
+
 using namespace nbt;
 
-class read_test : public CxxTest::TestSuite
+class write_test
 {
 public:
-    void test_stream_writer_big()
+    bool test_stream_writer_big()
     {
         std::ostringstream os;
         nbt::io::stream_writer writer(os);
@@ -70,7 +71,7 @@ public:
         TS_ASSERT(!os);
     }
 
-    void test_stream_writer_little()
+    bool test_stream_writer_little()
     {
         std::ostringstream os;
         nbt::io::stream_writer writer(os, endian::little);
@@ -94,7 +95,7 @@ public:
         TS_ASSERT(!os);
     }
 
-    void test_write_payload_big()
+    bool test_write_payload_big()
     {
         std::ostringstream os;
         nbt::io::stream_writer writer(os);
@@ -220,7 +221,7 @@ public:
         TS_ASSERT(!os);
     }
 
-    void test_write_bigtest()
+    bool test_write_bigtest()
     {
         /* Like already stated above, because no order is guaranteed for
         tag_compound, we cannot simply test it by writing into a stream and directly
@@ -268,5 +269,17 @@ public:
         TS_ASSERT_EQUALS(orig_pair.first, written_pair.first);
         TS_ASSERT(*orig_pair.second == *written_pair.second);
 #endif
+        return true;
     }
 };
+
+int main (void) {
+    write_test test;
+    bool success = true;
+    success &= test.test_stream_writer_big();
+    success &= test.test_stream_writer_little();
+    success &= test.test_write_bigtest();
+    success &= test.test_write_payload_big();
+
+    return success ? 0 : 1;
+}

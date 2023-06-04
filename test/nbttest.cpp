@@ -17,19 +17,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with libnbt++.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <cxxtest/TestSuite.h>
 #include "nbt_tags.h"
 #include "nbt_visitor.h"
 #include <algorithm>
 #include <set>
 #include <stdexcept>
+#include "test.h"
 
 using namespace nbt;
 
-class nbttest : public CxxTest::TestSuite
+class nbttest
 {
 public:
-    void test_tag()
+    bool test_tag()
     {
         TS_ASSERT(!is_valid_type(-1));
         TS_ASSERT(!is_valid_type(0));
@@ -63,9 +63,10 @@ public:
 
         TS_ASSERT_EQUALS(&tstr.as<tag_string>(), &tstr);
         TS_ASSERT_THROWS(tstr.as<tag_byte_array>(), std::bad_cast);
+        return true;
     }
 
-    void test_get_type()
+    bool test_get_type()
     {
         TS_ASSERT_EQUALS(tag_byte().get_type()      , tag_type::Byte);
         TS_ASSERT_EQUALS(tag_short().get_type()     , tag_type::Short);
@@ -79,9 +80,10 @@ public:
         TS_ASSERT_EQUALS(tag_compound().get_type()  , tag_type::Compound);
         TS_ASSERT_EQUALS(tag_int_array().get_type() , tag_type::Int_Array);
         TS_ASSERT_EQUALS(tag_long_array().get_type(), tag_type::Long_Array);
+        return true;
     }
 
-    void test_tag_primitive()
+    bool test_tag_primitive()
     {
         tag_int tag(6);
         TS_ASSERT_EQUALS(tag.get(), 6);
@@ -108,9 +110,10 @@ public:
         TS_ASSERT_EQUALS(tag_int(INT32_MIN).get(), INT32_MIN);
         TS_ASSERT_EQUALS(tag_long(INT64_MAX).get(), INT64_MAX);
         TS_ASSERT_EQUALS(tag_long(INT64_MIN).get(), INT64_MIN);
+        return true;
     }
 
-    void test_tag_string()
+    bool test_tag_string()
     {
         tag_string tag("foo");
         TS_ASSERT_EQUALS(tag.get(), "foo");
@@ -128,9 +131,10 @@ public:
 
         TS_ASSERT_EQUALS(tag_string(str).get(), "foo");
         TS_ASSERT_EQUALS(tag_string().get(), "");
+        return true;
     }
 
-    void test_tag_compound()
+    bool test_tag_compound()
     {
         tag_compound comp{
             {"foo", int16_t(12)},
@@ -226,9 +230,10 @@ public:
             {"def", tag_byte(4)},
             {"ghi", tag_string("world")}
         }));
+        return true;
     }
 
-    void test_value()
+    bool test_value()
     {
         value val1;
         value val2(std::make_unique<tag_int>(42));
@@ -301,9 +306,10 @@ public:
 
         val2.set_ptr(std::make_unique<tag_string>("foo"));
         TS_ASSERT(val2 == tag_string("foo"));
+        return true;
     }
 
-    void test_tag_list()
+    bool test_tag_list()
     {
         tag_list list;
         TS_ASSERT_EQUALS(list.el_type(), tag_type::Null);
@@ -341,7 +347,7 @@ public:
 
         list.clear();
         TS_ASSERT_EQUALS(list.size(), 0u);
-        TS_ASSERT_EQUALS(list.el_type(), tag_type::String)
+        TS_ASSERT_EQUALS(list.el_type(), tag_type::String);
         TS_ASSERT_THROWS(list.push_back(tag_short(25)), std::invalid_argument);
         TS_ASSERT_THROWS(list.push_back(value(nullptr)), std::invalid_argument);
 
@@ -371,9 +377,10 @@ public:
         TS_ASSERT_THROWS((tag_list{value(tag_int(7)), value(tag_int(8)), value(nullptr)}), std::invalid_argument);
         TS_ASSERT_EQUALS((tag_list(std::initializer_list<value>{})).el_type(), tag_type::Null);
         TS_ASSERT_EQUALS((tag_list{2, 3, 5, 7}).el_type(), tag_type::Int);
+        return true;
     }
 
-    void test_tag_byte_array()
+    bool test_tag_byte_array()
     {
         std::vector<int8_t> vec{1, 2, 127, -128};
         tag_byte_array arr{1, 2, 127, -128};
@@ -402,9 +409,10 @@ public:
 
         arr.clear();
         TS_ASSERT(arr == tag_byte_array());
+        return true;
     }
 
-    void test_tag_int_array()
+    bool test_tag_int_array()
     {
         std::vector<int32_t> vec{100, 200, INT32_MAX, INT32_MIN};
         tag_int_array arr{100, 200, INT32_MAX, INT32_MIN};
@@ -431,9 +439,10 @@ public:
 
         arr.clear();
         TS_ASSERT(arr == tag_int_array());
+        return true;
     }
 
-    void test_tag_long_array()
+    bool test_tag_long_array()
     {
         std::vector<int64_t> vec{100, 200, INT64_MAX, INT64_MIN};
         tag_long_array arr{100, 200, INT64_MAX, INT64_MIN};
@@ -460,9 +469,10 @@ public:
 
         arr.clear();
         TS_ASSERT(arr == tag_long_array());
+        return true;
     }
 
-    void test_visitor()
+    bool test_visitor()
     {
         struct : public nbt_visitor
         {
@@ -494,5 +504,24 @@ public:
         tag_compound   c;   c.accept(v); TS_ASSERT_EQUALS(v.visited, &c);
         tag_int_array  ia; ia.accept(v); TS_ASSERT_EQUALS(v.visited, &ia);
         tag_long_array la; la.accept(v); TS_ASSERT_EQUALS(v.visited, &la);
+        return true;
     }
 };
+
+int main (void) {
+    nbttest test;
+    bool success = true;
+    success &= test.test_tag();
+    success &= test.test_get_type();
+    success &= test.test_tag_primitive();
+    success &= test.test_tag_string();
+    success &= test.test_tag_compound();
+    success &= test.test_value();
+    success &= test.test_tag_list();
+    success &= test.test_tag_byte_array();
+    success &= test.test_tag_int_array();
+    success &= test.test_tag_long_array();
+    success &= test.test_visitor();
+
+    return success ? 0 : 1;
+}
