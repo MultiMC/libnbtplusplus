@@ -28,7 +28,7 @@ namespace nbt
 /**
  * @brief Tag that contains an array of int values
  */
-class tag_int_array final : public detail::crtp_tag<tag_int_array>
+class NBT_EXPORT tag_int_array final : public detail::crtp_tag<tag_int_array>
 {
 public:
     ///The type of the contained values

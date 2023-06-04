@@ -28,7 +28,7 @@ namespace nbt
 /**
  * @brief Tag that contains an array of byte values
  */
-class tag_byte_array final : public detail::crtp_tag<tag_byte_array>
+class NBT_EXPORT tag_byte_array final : public detail::crtp_tag<tag_byte_array>
 {
 public:
     ///The type of the contained values

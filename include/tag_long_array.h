@@ -28,7 +28,7 @@ namespace nbt
 /**
  * @brief Tag that contains an array of long values
  */
-class tag_long_array final : public detail::crtp_tag<tag_long_array>
+class NBT_EXPORT tag_long_array final : public detail::crtp_tag<tag_long_array>
 {
 public:
     ///The type of the contained values
