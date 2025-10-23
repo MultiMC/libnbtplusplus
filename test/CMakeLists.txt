@@ -25,6 +25,7 @@ function(build_data out_var)
     foreach(in_f ${ARGN})
         set(out_f "${CMAKE_CURRENT_BINARY_DIR}/testfiles/${in_f}.obj")
         add_custom_command(
+            POST_BUILD
             COMMAND mkdir -p "${CMAKE_CURRENT_BINARY_DIR}/testfiles"
             COMMAND ${CMAKE_OBJCOPY}  --prefix-symbol=_  --input-target=binary  --output-target=${OBJCOPY_TARGET} "${in_f}" "${out_f}"
             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/testfiles/${in_f}
